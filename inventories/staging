@@ -1,0 +1,5 @@
+[application]
+staging-app-wa.intranet
+
+[staging:children]
+application

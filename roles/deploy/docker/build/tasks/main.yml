@@ -1,0 +1,15 @@
+---
+- name: copy dockerfile
+  template:
+    src: dockerfiles/staging.wa.Dockerfile.j2
+    dest: /home/deploy/apps/whitnell-analytics/Dockerfile
+    mode: "u=rw,g=rw,o=r"
+    owner: deploy
+    group: deploy
+
+- name: build image
+  docker_image:
+    name: wa/staging-app
+    tag: latest
+    path: /home/deploy/app/whitnell-analytics
+    state: present

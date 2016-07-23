@@ -1,0 +1,10 @@
+---
+- name: deploy
+  hosts: application
+  remote_user: deploy
+  roles:
+    - role: deploy/docker/check
+    - role: deploy/docker/build
+    - role: deploy/docker/start
+    - role: deploy/nginx
+    - role: deploy/docker/cleanup

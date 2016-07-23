@@ -1,0 +1,65 @@
+FROM ruby:2.3.1-alpine
+MAINTAINER Mike Chau <mikec+github@whitnellanalytics.com>
+
+ENV PORT 3000
+ENV RAILS_ENV production
+ENV PASSENGER_VERSION 5.0.29
+ENV PATH /opt/passenger/bin:$PATH
+
+RUN echo 'http://alpine.gliderlabs.com/alpine/edge/testing' >> /etc/apk/repositories && \
+  apk add --update --no-cache \
+    build-base \
+    nodejs \
+    zlib-dev \
+    tzdata \
+    libxml2-dev \
+    libxslt-dev \
+    postgresql-dev \
+    git \
+    bash \
+    pcre \
+    curl \
+    pcre-dev \
+    curl-dev \
+    libstdc++ \
+    libexecinfo \
+    libexecinfo-dev \
+    procps \
+    linux-headers \
+    ca-certificates && \
+    # download and extract
+      mkdir -p /opt && \
+      curl -L https://s3.amazonaws.com/phusion-passenger/releases/passenger-$PASSENGER_VERSION.tar.gz | tar -xzf - -C /opt && \
+      mv /opt/passenger-$PASSENGER_VERSION /opt/passenger && \
+      export EXTRA_PRE_CFLAGS='-O' EXTRA_PRE_CXXFLAGS='-O' EXTRA_LDFLAGS='-lexecinfo' && \
+    # compile agent
+      passenger-config compile-agent --auto --optimize && \
+      passenger-config install-standalone-runtime --auto --url-root=fake --connect-timeout=1 && \
+      passenger-config build-native-support && \
+    # Cleanup passenger src directory
+      rm -rf /tmp/* && \
+      mv /opt/passenger/src/ruby_supportlib /tmp && \
+      mv /opt/passenger/src/nodejs_supportlib /tmp && \
+      mv /opt/passenger/src/helper-scripts /tmp && \
+      rm -rf /opt/passenger/src/* && \
+      mv /tmp/* /opt/passenger/src/ && \
+    # Cleanup
+      passenger-config validate-install --auto && \
+      apk del $BUILD_PACKAGES && \
+      rm -rf /var/cache/apk/* \
+          /tmp/* \
+          /opt/passenger/doc
+
+RUN mkdir -p /app
+WORKDIR /app
+
+ADD Gemfile /app/Gemfile
+ADD Gemfile.lock /app/Gemfile.lock
+
+RUN bundle install --without development test doc --deployment -j4 --retry 5
+
+ADD . /app
+
+EXPOSE 3000
+
+CMD passenger start -p ${PORT} --min-instances 6 --max-pool-size 6 --no-friendly-error-pages --no-install-runtime --no-compile-runtime

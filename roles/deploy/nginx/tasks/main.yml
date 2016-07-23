@@ -1,0 +1,29 @@
+---
+- name: update nginx config
+  template:
+    src: etc/nginx/sites-available/staging.whitnellanalytics.com.j2
+    dest: /etc/nginx/sites-available/staging.whitnellanalytics.com
+    mode: "u=rw,g=r,o=r"
+    owner: root
+    group: root
+  become: yes
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+  become: yes
+
+- name: check if old app port is running
+  shell: "lsof -i :{{ old_deploy_app_port }}"
+  become: yes
+  register: port_status
+  ignore_errors: yes
+
+- name: wait for connections to drain on old app port
+  wait_for:
+    host: 0.0.0.0
+    port: 3000
+    delay: 5
+  when: port_status.rc == 0
+  become: yes

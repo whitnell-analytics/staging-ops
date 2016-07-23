@@ -1,0 +1,8 @@
+---
+- name: remove wa-staging-app-current
+  docker_container:
+    name: wa-staging-app-current
+    state: absent
+
+- name: rename wa-staging-app-new to wa-staging-app-current
+  command: docker rename wa-staging-app-new wa-staging-app-current

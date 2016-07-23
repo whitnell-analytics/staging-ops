@@ -1,0 +1,31 @@
+---
+- name: check if current app is running
+  shell: "docker inspect -f {% raw %}{{.State.Running}}{% endraw %} wa-staging-app-current"
+  register: initial_current_app_status_result
+  ignore_errors: yes
+
+- name: check if new app is running
+  shell: "docker inspect -f {% raw %}{{.State.Running}}{% endraw %} wa-staging-app-new"
+  register: new_app_status_result
+  ignore_errors: yes
+  when: initial_current_app_status_result.rc != 0
+
+- name: rename new app if current app is not running
+  command: docker rename wa-staging-app-new wa-staging-app-current
+  when: (initial_current_app_status_result.rc != 0) and (new_app_status_result.rc == 0)
+
+- name: check if current app running on 3000
+  shell: docker port wa-staging-app-current 3000 | grep 127.0.0.1:3000
+  register: current_app_port_result
+  ignore_errors: yes
+
+- set_fact:
+    new_deploy_app_port: 3000
+    old_deploy_app_port: 3001
+  when: current_app_port_result.rc != 0
+
+- set_fact:
+    new_deploy_app_port: 3001
+    old_deploy_app_port: 3000
+  when: current_app_port_result.rc == 0
+
