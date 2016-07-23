@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -x
+
+ansible-playbook -i inventories/staging playbooks/deploy.yml "$@"
+
