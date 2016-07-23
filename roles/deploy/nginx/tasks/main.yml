@@ -23,7 +23,8 @@
 - name: wait for connections to drain on old app port
   wait_for:
     host: 0.0.0.0
-    port: 3000
+    port: "{{ old_deploy_app_port }}"
     delay: 5
+    state: drained
   when: port_status.rc == 0
   become: yes
