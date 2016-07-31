@@ -11,5 +11,5 @@
   docker_image:
     name: wa/staging-app
     tag: latest
-    path: /home/deploy/app/whitnell-analytics
+    path: /home/deploy/apps/whitnell-analytics
     state: present
