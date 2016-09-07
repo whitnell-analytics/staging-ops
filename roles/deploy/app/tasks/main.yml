@@ -1,0 +1,15 @@
+---
+- name: git clone repo
+  command: 'git pull'
+  args:
+    chdir: /home/deploy/apps/whitnell-analytics
+
+- name: bundle install
+  shell: bash -lc 'bundle install -j8'
+  args:
+    chdir: /home/deploy/apps/whitnell-analytics
+
+- name: rake assets:precompile
+  shell: bash -lc 'RAILS_ENV=production rake assets:precompile'
+  args:
+    chdir: /home/deploy/apps/whitnell-analytics

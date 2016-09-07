@@ -9,7 +9,8 @@
 
 - name: build image
   docker_image:
-    name: wa/staging-app
+    name: wa-staging-app
     tag: latest
     path: /home/deploy/apps/whitnell-analytics
     state: present
+    force: yes

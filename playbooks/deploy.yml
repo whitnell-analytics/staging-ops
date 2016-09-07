@@ -4,6 +4,7 @@
   remote_user: deploy
   roles:
     - role: deploy/docker/check
+    - role: deploy/app
     - role: deploy/docker/build
     - role: deploy/docker/start
     - role: deploy/nginx

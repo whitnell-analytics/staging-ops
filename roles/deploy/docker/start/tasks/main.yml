@@ -2,7 +2,7 @@
 - name: create new app container
   docker_container:
     name: wa-staging-app-new
-    image: wa/staging-app:latest
+    image: wa-staging-app:latest
     state: started
     ports:
       - "127.0.0.1:{{ new_deploy_app_port }}:3000"
