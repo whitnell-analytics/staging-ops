@@ -55,6 +55,7 @@ WORKDIR /app
 
 ADD Gemfile /app/Gemfile
 ADD Gemfile.lock /app/Gemfile.lock
+ADD vendor/gems /app/vendor/gems
 
 RUN bundle install --without development test doc --deployment -j4 --retry 5
 
