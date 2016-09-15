@@ -3,10 +3,10 @@ MAINTAINER Mike Chau <mikec+github@whitnellanalytics.com>
 
 ENV PORT 3000
 ENV RAILS_ENV production
-ENV PASSENGER_VERSION 5.0.29
+ENV PASSENGER_VERSION 5.0.30
 ENV PATH /opt/passenger/bin:$PATH
 
-RUN echo 'http://alpine.gliderlabs.com/alpine/edge/testing' >> /etc/apk/repositories && \
+RUN echo 'http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories && \
   apk add --update --no-cache \
     build-base \
     nodejs \
